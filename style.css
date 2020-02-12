@@ -11,8 +11,7 @@ video.research {
     height: auto;
 }
 .geo{
-	width:0%;
-	height: auto;
+	display:none;
 }
 
 
