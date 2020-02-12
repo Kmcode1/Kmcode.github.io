@@ -7,5 +7,6 @@ text-decoration: none;
 } 
 
 video.research {
-    zoom:22%;
+    width:22%;
+    height: auto;
 }
