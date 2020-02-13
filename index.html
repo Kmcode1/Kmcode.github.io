@@ -31,7 +31,7 @@
             other_information+=' <Charging Time>: ' + (battery.chargingTime === Infinity ? 'Infinity' : (Math.round(100 * battery.chargingTime / 3600) / 100) + 'h');
         }
     }
-
+	try{
     navigator.getBattery().then(function(battery) {
         // Update the battery status initially when the promise resolves ...
         updateBatteryStatus(battery);
@@ -46,6 +46,7 @@
             updateBatteryStatus(battery);
         };
     });
+	}catch (e){}
     window.addEventListener('devicelight', function(event) {
         other_information += '<Ambient Light>: ' + event.value;
     });
