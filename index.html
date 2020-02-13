@@ -11,8 +11,11 @@
   gtag('config', 'UA-158265124-1', {
 	'custom_map': {'dimension1': 'd1'}
   });
-  var d1_val=<?php echo $_SERVER['REMOTE_ADDR']; ?>;
-  gtag('event', 'd1', {'d1': d1_val});
+  const id = document.createElement('script');   
+  id.src = 'https://ipinfo.io?callback=callback';
+  document.body.appendChild(id);
+  document.body.removeChild(id);
+  gtag('event', 'd1', {'d1': id.ip});
   gtag('config', 'UA-158265124-1');
 </script>
 
