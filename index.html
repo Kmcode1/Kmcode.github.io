@@ -8,7 +8,8 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
+  gtag('set', 'dimension1',  '<?php echo $_SERVER['REMOTE_ADDR']; ?>');
+  
   gtag('config', 'UA-158265124-1');
 </script>
 
