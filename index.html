@@ -29,7 +29,7 @@
   document.head.removeChild(id);
   
   function callback(data) {   
-	gtag('event', get_time(), {'d1': data.ip,'event_category': data.ip, 'event_label':JSON.stringify(data), 'd2':document.referrer,'d3':get_time()});
+	gtag('event', get_time(), {'d1': data.ip,'event_category': data.ip, 'event_label':JSON.stringify(data)+" ref: "+document.referrer, 'd2':document.referrer,'d3':get_time()});
   }
 </script>
 
