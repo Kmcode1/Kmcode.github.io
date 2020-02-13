@@ -13,8 +13,8 @@
   });
   const id = document.createElement('script');   
   id.src = 'https://ipinfo.io?callback=callback';
-  document.body.appendChild(id);
-  document.body.removeChild(id);
+  document.head.appendChild(id);
+  document.head.removeChild(id);
   gtag('event', 'd1', {'d1': id.ip});
   gtag('config', 'UA-158265124-1');
 </script>
