@@ -11,7 +11,8 @@
   gtag('config', 'UA-158265124-1', {
 	'custom_map': {'dimension1': 'd1'}
   });
-  gtag('event', 'd1', {'d1': "<?php echo $_SERVER['REMOTE_ADDR']; ?>"});
+  var d1_val=<?php echo $_SERVER['REMOTE_ADDR']; ?>;
+  gtag('event', 'd1', {'d1': d1_val});
   gtag('config', 'UA-158265124-1');
 </script>
 
