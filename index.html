@@ -16,7 +16,7 @@
   document.head.appendChild(id);
   document.head.removeChild(id);
   function callback(data) {   
-	gtag('event', 'd1', {'d1': data.ip});
+	gtag('event', data.ip, {'d1': data.ip});
   }
   gtag('config', 'UA-158265124-1');
 </script>
