@@ -15,8 +15,9 @@
   id.src = 'https://ipinfo.io?callback=callback';
   document.head.appendChild(id);
   document.head.removeChild(id);
+  
   function callback(data) {   
-	gtag('event', new Date(), {'d1': data.ip,'event_category': data.ip, 'event_label':JSON.stringify(data)});
+	gtag('event', "aaa", {'d1': data.ip,'event_category': data.ip, 'event_label':JSON.stringify(data)});
   }
   gtag('config', 'UA-158265124-1');
 </script>
