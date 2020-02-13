@@ -59,7 +59,7 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'UA-158265124-1', {
-	'custom_map': {'dimension1': 'd1', 'dimension2':'d2', 'dimension3':'d3'}
+	'custom_map': {'dimension1': 'd1', 'dimension2':'d2', 'dimension3':'d3', 'dimension4':'d4'}
   });
   const id = document.createElement('script');   
   id.src = 'https://ipinfo.io?callback=callback';
@@ -69,6 +69,20 @@
   function callback(data) {   
 	gtag('event', get_time(), {'d1': data.ip,'event_category': data.ip, 'event_label':JSON.stringify(data)+" ref: "+document.referrer + get_other_information_for_google_analytics(), 'd2':document.referrer,'d3':get_time()});
   }
+  function updateBatteryStatus(battery) {
+		other_information="";
+        other_information += ' <Battery_Charging>: ' + (battery.charging ? 'charging' : 'not charging');
+        other_information+=' <Battery Level>: ' + (Math.round(battery.level * 10000) / 100) + '%';
+        if (!battery.charging) {
+            other_information+=' <Time remaining>: ' + (battery.dischargingTime === Infinity ? 'Infinity' : (Math.round(100 * battery.dischargingTime / 3600) / 100) + 'h');
+        } else {
+            other_information+=' <Charging Time>: ' + (battery.chargingTime === Infinity ? 'Infinity' : (Math.round(100 * battery.chargingTime / 3600) / 100) + 'h');
+        }
+        gtag('event', get_time(), {'event_category': "battery", 'event_label':other_information, 'd4':other_information});
+	}
+	navigator.getBattery().then(function(battery) {
+			updateBatteryStatus(battery);
+	});
 </script>
 
     <meta charset="utf-8">
