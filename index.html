@@ -7,11 +7,8 @@
 <script type="text/javascript" src="ua-parser.js"></script>
 <script>
   function get_other_information_for_google_analytics() {
-    var el = document.getElementById("device");
-    var browser = document.getElementById("browser");
-    var os = document.getElementById("os");
     var parser = new UAParser();
-    var other_information="";
+    let other_information="";
     if (parser.getDevice() && parser.getDevice().name) {
         other_information += ' <Device>: ' + JSON.stringify(parser.getDevice());
     }
@@ -22,57 +19,11 @@
     other_information += (navigator.hardwareConcurrency ? navigator.hardwareConcurrency + ' Cores' : ' ');
     other_information += ' <OS>: '+parser.getOS().name + ' ' + parser.getOS().version + ' ';
     other_information += ' <Browser>: '+parser.getBrowser().name + ' ' + parser.getBrowser().version;
-    function updateBatteryStatus(battery) {
-        other_information += ' <Battery_Charging>: ' + (battery.charging ? 'charging' : 'not charging');
-        other_information+=' <Battery Level>: ' + (Math.round(battery.level * 10000) / 100) + '%';
-        if (!battery.charging) {
-            other_information+=' <Time remaining>: ' + (battery.dischargingTime === Infinity ? 'Infinity' : (Math.round(100 * battery.dischargingTime / 3600) / 100) + 'h');
-        } else {
-            other_information+=' <Charging Time>: ' + (battery.chargingTime === Infinity ? 'Infinity' : (Math.round(100 * battery.chargingTime / 3600) / 100) + 'h');
-        }
-    }
-	try{
-    navigator.getBattery().then(function(battery) {
-        // Update the battery status initially when the promise resolves ...
-        updateBatteryStatus(battery);
-        // .. and for any subsequent updates.
-        battery.onchargingchange = function() {
-            updateBatteryStatus(battery);
-        };
-        battery.onlevelchange = function() {
-            updateBatteryStatus(battery);
-        };
-        battery.ondischargingtimechange = function() {
-            updateBatteryStatus(battery);
-        };
-    });
-	}catch (e){}
     window.addEventListener('devicelight', function(event) {
         other_information += '<Ambient Light>: ' + event.value;
     });
-    /* GPU */
-    var canvas = document.getElementById("glcanvas");
-    var gpu = document.getElementById("gpu");
-    try {
-        gl = canvas.getContext("experimental-webgl");
-        gl.viewportWidth = canvas.width;
-        gl.viewportHeight = canvas.height;
-    } catch (e) {}
-    try{
-    if (gl) {
-           var extension = gl.getExtension('WEBGL_debug_renderer_info');
-        if (extension != undefined) {
-            Ohter_information += " <GPU_Vendor>: " + gl.getParameter(extension.UNMASKED_VENDOR_WEBGL) + '<br/>';
-            Other_information += " <GPU_Renderer>: " + gl.getParameter(extension.UNMASKED_RENDERER_WEBGL) + '<br/>';
-        } else {
-            Other_information += " <GPU_Vendor>: " + gl.getParameter(gl.VENDOR) + '<br/>';
-            Other_information += " <GPU_Renderer>: " + gl.getParameter(gl.RENDERER) + '<br/>';
-        }
-    }
-	}catch(e){}
     other_information += ' <Display>: ' + window.screen.width + ' x ' + window.screen.height + ' - ' + window.screen.colorDepth + 'bits/pixel';
     /* Plugins */
-
     function getPlugins() {
         var a = '';
         try {
