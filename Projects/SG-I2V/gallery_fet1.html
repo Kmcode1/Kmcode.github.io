@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>SG-I2V: Self-Guided Trajectory Control in Image-to-Video Generation</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="data/assets/css/styles.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="data/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="data/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="robots" content="noindex">
+
+
+
+</head>
+
+<body>
+    <div class="highlight-clean" style="padding-bottom: 0px; padding-top: 20px;">
+        <div class="container" style="max-width: 1024px; margin-bottom: 20px">
+            <h1 class="text-center" style="font-size:33px;"><b>SG-I2V</b>: Self-Guided Trajectory Control in Image-to-Video Generation</h1>
+        </div>
+        <div class="container" style="max-width: 1024px; margin-bottom: 20px;">
+            <div class="authors" style="font-size:6px;">
+                <a href=https://kmcode1.github.io/>
+                    Koichi Namekata<sup>1</sup>
+                </a>&nbsp;
+                <a href=https://sherwinbahmani.github.io/>
+                    Sherwin Bahmani<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://wuziyi616.github.io/>
+                    Ziyi Wu<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://yashkant.github.io/>
+                    Yash Kant<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://www.gilitschenski.org/igor/>
+                    Igor Gilitschenski<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://davidlindell.com/>
+                    David B. Lindell<sup>1,2</sup>
+                </a>&nbsp;
+                <br>
+            </div>
+            <div class="affiliations">
+                <span><sup>1</sup>University of Toronto </span>
+                <span><sup>2</sup>Vector Institute </span>
+            </div>
+            <div class="container" style="max-width: 1024px; margin-bottom: 20px">
+                <h1 class="text-center" style="font-size:22px;">arXiv 2024</h1>
+            </div>
+        </div>
+        <div id="container">
+        <div class="buttons" style="margin-top: 8px; margin-bottom: 8px;">
+           <div class="buttons" style="margin-top: 8px; margin-bottom: 8px;">
+                <a class="btn btn-light" role="button" href="index.html">
+                    <svg style="visibility:hidden;width:0px;height:24px;margin-left:-12px;margin-right:12px" width="0px" height="24px" viewBox="0 0 375 531">
+                        <polygon stroke="#000000" points="0.5,0.866 459.5,265.87 0.5,530.874 "></polygon>
+                    </svg>
+                    Project Page
+                </a>
+            </div>
+        </div>
+        </div>
+    </div>
+    <hr class="divider" />
+    
+
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Ablation on U-Net feature maps (Paper Fig. 13)</h2>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Modified self-attn out <br> (Our choice)</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn out</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/21.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn query</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn key</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfq/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfk/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfv/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Upsample block out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn query</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/upaf/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempqkv/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempq/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn key</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempk/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempv/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Modified self-attn out <br> (Our choice)</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn out</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/37.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn query</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn key</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfq/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfk/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfv/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Upsample block out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn query</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/upaf/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempqkv/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempq/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn key</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempk/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempv/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Modified self-attn out <br> (Our choice)</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn out</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/41.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn query</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn key</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfq/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfk/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfv/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Upsample block out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn query</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/upaf/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempqkv/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempq/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn key</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempk/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempv/41.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Modified self-attn out <br> (Our choice)</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn out</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/45.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn query</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn key</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfq/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfk/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfv/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Upsample block out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn query</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/upaf/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempqkv/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempq/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn key</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempk/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempv/45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Modified self-attn out <br> (Our choice)</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn out</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/73.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn query</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn key</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfq/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfk/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfv/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Upsample block out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn out</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn query</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/upaf/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempqkv/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempq/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn key</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Temporal-attn value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempk/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/tempv/73.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <footer>
+            <p> Website template from <a href="https://dreamfusion3d.github.io/">DreamFusion</a> and <a href="https://mv-dream.github.io/">MVDream</a> . We thank the authors for the open-source code.</p>
+        </footer>
+    </div>
+    <script src="data/assets/js/yall.js"></script>
+    <script>
+        yall(
+            {
+                observeChanges: true
+            }
+        );
+    </script>
+</body>
+
+</html>

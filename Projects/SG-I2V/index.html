@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>SG-I2V: Self-Guided Trajectory Control in Image-to-Video Generation</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="data/assets/css/styles.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="data/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="data/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            processEscapes: true
+          }
+        });
+    </script>
+
+    <script
+        type="text/javascript"
+        src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+    ></script>
+</head>
+
+<body>
+    <div class="highlight-clean" style="padding-bottom: 0px; padding-top: 20px;">
+        <div class="container" style="max-width: 1024px; margin-bottom: 20px">
+            <h1 class="text-center" style="font-size:33px;"><b>SG-I2V</b>: Self-Guided Trajectory Control in Image-to-Video Generation</h1>
+        </div>
+        <div class="container" style="max-width: 1024px; margin-bottom: 20px;">
+            <div class="authors" style="font-size:6px;">
+                <a href=https://kmcode1.github.io/>
+                    Koichi Namekata<sup>1</sup>
+                </a>&nbsp;
+                <a href=https://sherwinbahmani.github.io/>
+                    Sherwin Bahmani<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://wuziyi616.github.io/>
+                    Ziyi Wu<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://yashkant.github.io/>
+                    Yash Kant<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://www.gilitschenski.org/igor/>
+                    Igor Gilitschenski<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://davidlindell.com/>
+                    David B. Lindell<sup>1,2</sup>
+                </a>&nbsp;
+                <br>
+            </div>
+            <div class="affiliations">
+                <span><sup>1</sup>University of Toronto </span>
+                <span><sup>2</sup>Vector Institute </span>
+            </div>
+            <div class="container" style="max-width: 1024px; margin-bottom: 20px">
+                <h1 class="text-center" style="font-size:22px;">arXiv 2024</h1>
+            </div>
+        </div>
+        <div id="container">
+        <div class="buttons" style="margin-top: 8px; margin-bottom: 8px;">
+            <a class="btn btn-light" role="button" href="https://arxiv.org/abs/">
+                <svg style="width:24px;height:24px;margin-left:-12px;margin-right:12px" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M16 0H8C6.9 0 6 .9 6 2V18C6 19.1 6.9 20 8 20H20C21.1 20 22 19.1 22 18V6L16 0M20 18H8V2H15V7H20V18M4 4V22H20V24H4C2.9 24 2 23.1 2 22V4H4M10 10V12H18V10H10M10 14V16H15V14H10Z"></path>
+                </svg>Paper
+            </a>
+            <a class="btn btn-light" role="button" href="">
+                <svg xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px;margin-left:-12px;margin-right:12px" viewBox="0 0 24 24">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 
+                            1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 
+                            3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 
+                            2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
+                </svg>
+                Code (TBA)
+            </a>
+        </div>
+        </div>
+    </div>
+    <!--<hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="compositional captioned_videos">
+            <video class="video lazy" autoplay loop playsinline muted>
+                <source data-src="data/videos/teaser.mp4" type="video/mp4"></source>
+            </video>
+        </div>
+    </div>-->
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2>Abstract</h2>
+                    </div>
+                </div>
+                <p>
+                    Methods for image-to-video generation have achieved impressive, photo-realistic quality. 
+                    However, adjusting specific elements in generated videos, such as object motion or camera movement, is often a tedious process of trial and error, e.g.,
+                    involving re-generating videos with different random seeds. Recent techniques address this issue by fine-tuning a pre-trained model to follow conditioning signals, such as bounding boxes or point trajectories. Yet, this fine-tuning procedure
+                    can be computationally expensive, and it requires datasets with annotated object motion, which can be difficult to procure. Here, we propose SG-I2V, a framework for controllable image-to-video generation that is self-guided—offering zero-shot control leveraging a pre-trained image-to-video diffusion model without 
+                    fine-tuning or external guidance. Our zero-shot method outperforms unsupervised baselines while being competitive with supervised models in terms of visual quality and motion fidelity. 
+                </p>
+            </div>
+        </div>
+    </div>
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Method</h2>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-md-12">
+                <p>
+                    In this work, the motion of generated videos is controlled by specifying the bounding boxes and associated trajectories.<br><br>
+                    To control trajectories of scene elements during the denoising process, we optimize latent $z_t$ at specific timesteps $t$ as follows:<br>
+                    <b>(1)</b> We extract semantically aligned feature maps from the denoising U-Net, where regions belonging to the same objects across frames have similar feature vectors.<br>
+                    <b>(2)</b> We optimize the latent $z_t^*$ with a loss that encourages cross-frame feature similarity along the input trajectory.<br>
+                    <b>(3)</b> To preserve the visual quality of the generated video, a frequency-based post-processing method is applied to retain high-frequency noise of the original latent $z_t$. The updated latent $\tilde{z}_t$ is input to the next denoising step.
+                </p>
+                <img src="overview.jpg" alt="architecture" style="width: 100%">
+            </div>
+        </div>
+    </div>
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 id="obj-motion-results">Qualitative Results: Object Motion Control</h2>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/145.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/110.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/19.jpg" width="100%" height="100%">
+                </div>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/145.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="1" loop playsinline autoPlay muted src="data/videos/qual/110.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="2" loop playsinline autoPlay muted src="data/videos/qual/19.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/61.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/38.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/171.jpg" width="100%" height="100%">
+                </div>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/61.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="1" loop playsinline autoPlay muted src="data/videos/qual/38.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="2" loop playsinline autoPlay muted src="data/videos/qual/171.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+            <a href="gallery_obj.html" class="btn btn-primary btn-lg btn-search">
+                More Results
+            </a>
+        </div>
+    </div>
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 id="cam-motion-results">Qualitative Results: Camera Motion Control</h2>
+            </div>
+        </div>
+
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/130.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/154.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/87.jpg" width="100%" height="100%">
+                </div>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="1" loop playsinline autoPlay muted src="data/videos/qual/154.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="2" loop playsinline autoPlay muted src="data/videos/qual/87.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/176.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/139.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/127.jpg" width="100%" height="100%">
+                </div>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/176.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="1" loop playsinline autoPlay muted src="data/videos/qual/139.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="2" loop playsinline autoPlay muted src="data/videos/qual/127.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+            <a href="gallery_cam.html" class="btn btn-primary btn-lg btn-search">
+                More Results
+            </a>
+        </div>
+    </div>
+
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 id="baseline-comparison">Qualitative Results: Comparison with Supervised Baselines (Paper Fig. 4)</h2>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-md-12">
+                <p>
+                    While our method is tuning-free (i.e. no fine-tuning on annotated data), it demonstrates competitive performance with supervised baselines in visual and motion quality.
+                </p>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-3 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-3 compare-title  compare-title-sm">
+                <p>Ours</p>
+            </div>
+            <div class="col-3 compare-title  compare-title-sm">
+                <p>DragNUWA</p>
+            </div>
+            <div class="col-3 compare-title">
+                <p>DragAnything</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/9.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/9.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="1" loop playsinline autoPlay muted src="data/videos/baseline/dragnuwa/9.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="2" loop playsinline autoPlay muted src="data/videos/baseline/draganything/9.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+                <a href="gallery_baseline.html" class="btn btn-primary btn-lg btn-search">
+                    More Comparison 1/2
+                </a>
+            </div>
+            <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+                <a href="gallery_baseline2.html" class="btn btn-primary btn-lg btn-search">
+                    More Comparison 2/2
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Ablation Study: Modified Self-Attention</h2>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-md-12">
+                <p>
+                    We find that diffusion features in video diffusion models are weakly semantically aligned, where regions belonging to the same objects across frames have inconsistent feature vectors.<br>
+                    To address this issue, we modify the computation of spatial self-attention layers by replacing key and value tokens of each frame with those of the first frame.<br>
+                    As demonstrated below, this modification successfully produces feature maps clearly semantically aligned across frames.
+                </p>
+            </div>
+        </div>
+            <div class="row">
+                    <div class="col-sm-12">
+                        <h5 id="ablation-unet-featuremap-PCA"><b>PCA Visualization of diffusion features at timestep = 30/50 (Paper Fig. 2)</b></h5>
+                    </div>
+            </div>
+            <div class="row" style="margin-bottom: 0px;">
+                <div class="col-3 compare-title  compare-title-sm">
+                    <p>Generated Video</p>
+                </div>
+                <div class="col-3 compare-title  compare-title-sm">
+                    <p>Up-Block output</p>
+                </div>
+                <div class="col-3 compare-title  compare-title-sm">
+                    <p>Self-Attention</p>
+                </div>
+                <div class="col-3 compare-title">
+                    <p><b>Modified Self (Ours)</b></p>
+                </div>
+            </div>
+            <div class="row captioned_videos">
+                    <div class="col-3">
+                        <div class="video-compare-container" style="width: 100%">
+                            <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/63/generated.webm" onplay="resizeAndPlay(this)"></video>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="video-compare-container" style="width: 100%">
+                            <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/63/upafup22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="video-compare-container" style="width: 100%">
+                            <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/63/selfqkvup22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="video-compare-container" style="width: 100%">
+                            <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/63/selfqkv2up22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                        </div>
+                    </div>
+            </div>
+            <div class="row captioned_videos">
+                    <div class="col-3">
+                        <div class="video-compare-container" style="width: 100%">
+                            <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/50/generated.webm" onplay="resizeAndPlay(this)"></video>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="video-compare-container" style="width: 100%">
+                            <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/50/upafup22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="video-compare-container" style="width: 100%">
+                            <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/50/selfqkvup22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="video-compare-container" style="width: 100%">
+                            <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/50/selfqkv2up22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                        </div>
+                    </div>
+            </div>
+            <!--<div class="row captioned_videos">
+                <div class="col-3">
+                    <div class="video-compare-container" style="width: 100%">
+                        <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/37/generated.webm" onplay="resizeAndPlay(this)"></video>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="video-compare-container" style="width: 100%">
+                        <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/37/upafup22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="video-compare-container" style="width: 100%">
+                        <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/37/selfqkvup22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="video-compare-container" style="width: 100%">
+                        <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/PCA/37/selfqkv2up22_30/video.webm" onplay="resizeAndPlay(this)"></video>
+                    </div>
+                </div>
+            </div>-->
+            <!--<div class="row">
+                <div class="col-sm-12">
+                    <h5 id="ablation-unet-featuremap"><b>PCA visualization of Original self-attention, layer: Mid 2, timestep: 50, 40, 30 (row 1, 2, 3)</b></h5>
+                </div>
+            </div>
+            <div class="row captioned_videos">
+                    <div class="col-md-12">
+                        <div class="video-compare-container" style="width: 100%">
+                            <img src="data/videos/PCA/37/selfqkv2up22_50/all.png" width="100%" height="100%">
+                        </div>
+                        <div class="video-compare-container" style="width: 100%">
+                            <img src="data/videos/PCA/37/selfqkv2up22_40/all.png" width="100%" height="100%">
+                        </div>
+                        <div class="video-compare-container" style="width: 100%">
+                            <img src="data/videos/PCA/37/selfqkv2up22_30/all.png" width="100%" height="100%">
+                        </div>
+                    </div>
+            </div>-->
+            <div class="row captioned_videos">
+                <div class="col-md-12">
+                    <p>
+                        To demonstrate the effectivness of utilizing modified self-attention feature maps for the optimization, we compare against videos generated with naively extracted feature maps:
+                    </p>
+                </div>
+            </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <h5 id="ablation-unet-featuremap"><b>Ablation on U-Net feature maps (Paper Fig. 13)</b></h5>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-3 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-3 compare-title  compare-title-sm">
+                <p>Modified self-attn out <br> (Our choice)</p>
+            </div>
+            <div class="col-3 compare-title">
+                <p>Self-attn out</p>
+            </div>
+            <div class="col-3 compare-title">
+                <p>Upsample block out</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/21.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/upaf/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn query</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Self-attn Key</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Self-attn Value</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfq/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfk/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfv/21.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>-->
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+                <a href="gallery_fet1.html" class="btn btn-primary btn-lg btn-search">
+                    More Results 1/2
+                </a>
+            </div>
+            <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+                <a href="gallery_fet2.html" class="btn btn-primary btn-lg btn-search">
+                    More Results 2/2
+                </a>
+            </div>
+        </div>
+
+        <div class="row captioned_videos">
+            <div class="col-md-12">
+                <p>
+                    <br>
+                    As demonstrated above, applying naively extracted feature maps for the optimization fails to follow the trajectory due to the weak semantic
+                    alignment across frames. 
+                    In contrast, performing optimization with our modified self-attention layers can produce videos consistent with the input trajectory, highliting the importance of using
+                    semantically aligned feature maps.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 id="ablation-post-processing">Ablation Study: High-Frequency Preservation in Post-Processing (Paper Fig. 7)</h2>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-md-12">
+                <p>
+                    Naively optimized latent may disrupt the distribution of high-frequency noise expected by the diffusion model, which results in generateing oversmoothed videos with artifacts.
+                    As demonstrated below, our high-frequency preserved post-processing recovers video quality while maintaining motion fidelity.      
+                </p>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>w/o post-processing</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>w/ post-processing (Our choice)</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/37.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/fft/no_fft/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/37.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+            <a href="gallery_FFT.html" class="btn btn-primary btn-lg btn-search">
+                More Results
+            </a>
+        </div>
+    </div>
+
+
+
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 id="ablation-unet-layer">Hyperparameter Analysis: U-Net Layers (Paper Fig. 14)</h2>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-md-12">
+                <p>
+                    Here, we study the effect of extracting feature maps from various resolution levels of the upward path. 
+                    We observe that feature maps extracted from the middle layers can produce the most plausible videos consistent with the input trajectory.
+                    In this work, we choose the last two middle layers for optimization.
+                </p>
+            </div>
+        </div>
+        <!--
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/130.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/qual/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        -->
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-3 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-3 compare-title  compare-title-sm">
+                <p>Bottom 2</p>
+            </div>
+            <div class="col-3 compare-title  compare-title-sm">
+                <p>Mid 2</p>
+            </div>
+            <div class="col-3 compare-title">
+                <p>Top 1</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/qual/130.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up11/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up21/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up30/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Bottom 1</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Bottom 2</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Bottom 3</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up10/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up11/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up12/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Mid 1</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Mid 2</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Mid 3</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up20/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up21/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up22/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Top 1</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Top 2</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Top 3</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up30/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up31/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/layer/selfqkv2up32/130.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>-->
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+                <a href="gallery_layer1.html" class="btn btn-primary btn-lg btn-search">
+                    More Results 1/2
+                </a>
+            </div>
+            <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+                <a href="gallery_layer2.html" class="btn btn-primary btn-lg btn-search">
+                    More Results 2/2
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2 id="ablation-denoising-timestep">Hyperparameter Analysis: Denoising Timesteps (Paper Fig. 15)</h2>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-md-12">
+                <p>
+                    Here, we study the effect of optimizing latent at individual denoising timesteps. 
+                    Performing optimization at later stage of denoising steps (e.g. $t=10, 20$) severely introduces artifacts in the generated videos, while early denoising steps (e.g. $t=50$) have weak motion control.
+                    Based on this observation, we perform latent optimization at timesteps $[30, 45]$.
+                </p>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-4 compare-title">
+                <p>Timestep 50</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Timestep 40</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/ablation/timestep/car5/img.jpg" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/car5/50.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/car5/40.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title">
+                <p>Timestep 30</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Timestep 20</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Timestep 10</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/car5/30.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="1" loop playsinline autoPlay muted src="data/videos/ablation/timestep/car5/20.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="1" loop playsinline autoPlay muted src="data/videos/ablation/timestep/car5/10.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 my-auto center" style="margin-left:auto; margin-right: auto;">
+            <a href="gallery_timestep.html" class="btn btn-primary btn-lg btn-search">
+                More Results
+            </a>
+        </div>
+    </div>
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Citation</h2>
+                <code>
+                    @article{TBA,<br>
+                    &nbsp; author = {Namekata, Koichi and Bahmani, Sherwin and Wu, Ziyi and Kant, Yash and Gilitschenski, Igor and Lindell, David B.},<br>
+                    &nbsp; title  = {SG-I2V: Self-Guided Trajectory Control in Image-to-Video Generation},<br>
+                    &nbsp; journal = {arXiv preprint arXiv: TBA},<br>
+                    &nbsp; year   = {2024},<br>
+                }</code></div>
+        </div>
+    </div>
+    <hr class="divider" /><br>
+    <div class="container" style="max-width: 768px;">
+        <footer>
+            <p> Website template from <a href="https://dreamfusion3d.github.io/">DreamFusion</a> and <a href="https://mv-dream.github.io/">MVDream</a> . We thank the authors for the open-source code.</p>
+        </footer>
+    </div>
+    <script src="data/assets/js/yall.js"></script>
+    <script>
+        yall(
+            {
+                observeChanges: true
+            }
+        );
+    </script>
+</body>
+
+</html>
