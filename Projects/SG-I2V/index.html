@@ -22,7 +22,7 @@
     <meta property="og:site_name" content="SG-I2V" />
     <meta property="og:type" content="video.other" />
     <meta property="og:title" content="SG-I2V: Self-Guided Trajectory Control in Image-to-Video Generation" />
-    <meta property="og:description" content="We present SG-I2V that enables zero-shot trajectory control in image-to-video generation by relying solely on the knowledge present in a pre-trained image-to-video diffusion model." />
+    <meta property="og:description" content="We present SG-I2V, a framework that enables zero-shot trajectory control in image-to-video generation by relying solely on the knowledge present in a pre-trained image-to-video diffusion model." />
     <meta property="og:url" content="https://kmcode1.github.io/Projects/SG-I2V/" />
 
     <!-- MathJax -->
@@ -132,7 +132,7 @@
         <div class="row captioned_videos">
             <div class="col-md-12">
                 <p>
-                    In this work, the motion of generated videos is controlled by specifying the bounding boxes and associated trajectories.<br><br>
+                    In this work, we control the motion in generated videos by specifying bounding boxes and their associated trajectories. We employ Stable Video Diffusion as a pre-trained image-to-video diffusion model.<br><br>
                     To control trajectories of scene elements during the denoising process, we optimize latent $z_t$ at specific timesteps $t$ as follows:<br>
                     <b>(1)</b> We extract semantically aligned feature maps from the denoising U-Net, where regions belonging to the same objects across frames have similar feature vectors.<br>
                     <b>(2)</b> We optimize the latent $z_t^*$ with a loss that encourages cross-frame feature similarity along the input trajectory.<br>
