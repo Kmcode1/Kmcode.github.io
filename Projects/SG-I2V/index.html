@@ -114,10 +114,11 @@
                 </div>
                 <p>
                     Methods for image-to-video generation have achieved impressive, photo-realistic quality. 
-                    However, adjusting specific elements in generated videos, such as object motion or camera movement, is often a tedious process of trial and error, e.g.,
-                    involving re-generating videos with different random seeds. Recent techniques address this issue by fine-tuning a pre-trained model to follow conditioning signals, such as bounding boxes or point trajectories. Yet, this fine-tuning procedure
-                    can be computationally expensive, and it requires datasets with annotated object motion, which can be difficult to procure. Here, we propose SG-I2V, a framework for controllable image-to-video generation that is self-guided—offering zero-shot control leveraging a pre-trained image-to-video diffusion model without 
-                    fine-tuning or external guidance. Our zero-shot method outperforms unsupervised baselines while being competitive with supervised models in terms of visual quality and motion fidelity. 
+However, adjusting specific elements in generated videos, such as object motion or camera movement, is often a tedious process of trial and error, e.g., involving re-generating videos with different random seeds. 
+Recent techniques address this issue by fine-tuning a pre-trained model to follow conditioning signals, such as bounding boxes or point trajectories. 
+Yet, this fine-tuning procedure can be computationally expensive, and it requires datasets with annotated object motion, which can be difficult to procure. 
+In this work, we introduce SG-I2V, a framework for controllable image-to-video generation that is self-guided&mdash;offering zero-shot control by relying solely on the knowledge present in a pre-trained image-to-video diffusion model without the need for fine-tuning or external knowledge. 
+Our zero-shot method outperforms unsupervised baselines while being competitive with supervised models in terms of visual quality and motion fidelity.
                 </p>
             </div>
         </div>
@@ -132,7 +133,7 @@
         <div class="row captioned_videos">
             <div class="col-md-12">
                 <p>
-                    In this work, we control the motion in generated videos by specifying bounding boxes and their associated trajectories. We employ Stable Video Diffusion as a pre-trained image-to-video diffusion model.<br><br>
+                    In this work, we control the motion in generated videos by specifying bounding boxes and their associated trajectories. Our framework is built on Stable Video Diffusion, a publicly available image-to-video diffusion model.<br><br>
                     To control trajectories of scene elements during the denoising process, we optimize latent $z_t$ at specific timesteps $t$ as follows:<br>
                     <b>(1)</b> We extract semantically aligned feature maps from the denoising U-Net, where regions belonging to the same objects across frames have similar feature vectors.<br>
                     <b>(2)</b> We optimize the latent $z_t^*$ with a loss that encourages cross-frame feature similarity along the input trajectory.<br>
