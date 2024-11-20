@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>SG-I2V: Self-Guided Trajectory Control in Image-to-Video Generation</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="data/assets/css/styles.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="data/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="data/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="robots" content="noindex">
+
+
+
+</head>
+
+<body>
+    <div class="highlight-clean" style="padding-bottom: 0px; padding-top: 20px;">
+        <div class="container" style="max-width: 1024px; margin-bottom: 20px">
+            <h1 class="text-center" style="font-size:33px;"><b>SG-I2V</b>: Self-Guided Trajectory Control in Image-to-Video Generation</h1>
+        </div>
+        <div class="container" style="max-width: 1024px; margin-bottom: 20px;">
+            <div class="authors" style="font-size:6px;">
+                <a href=https://kmcode1.github.io/>
+                    Koichi Namekata<sup>1</sup>
+                </a>&nbsp;
+                <a href=https://sherwinbahmani.github.io/>
+                    Sherwin Bahmani<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://wuziyi616.github.io/>
+                    Ziyi Wu<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://yashkant.github.io/>
+                    Yash Kant<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://www.gilitschenski.org/igor/>
+                    Igor Gilitschenski<sup>1,2</sup>
+                </a>&nbsp;
+                <a href=https://davidlindell.com/>
+                    David B. Lindell<sup>1,2</sup>
+                </a>&nbsp;
+                <br>
+            </div>
+            <div class="affiliations">
+                <span><sup>1</sup>University of Toronto </span>
+                <span><sup>2</sup>Vector Institute </span>
+            </div>
+            <div class="container" style="max-width: 1024px; margin-bottom: 20px">
+                <h1 class="text-center" style="font-size:22px;">arXiv 2024</h1>
+            </div>
+        </div>
+        <div id="container">
+        <div class="buttons" style="margin-top: 8px; margin-bottom: 8px;">
+           <div class="buttons" style="margin-top: 8px; margin-bottom: 8px;">
+                <a class="btn btn-light" role="button" href="index.html">
+                    <svg style="visibility:hidden;width:0px;height:24px;margin-left:-12px;margin-right:12px" width="0px" height="24px" viewBox="0 0 375 531">
+                        <polygon stroke="#000000" points="0.5,0.866 459.5,265.87 0.5,530.874 "></polygon>
+                    </svg>
+                    Project Page
+                </a>
+            </div>
+        </div>
+        </div>
+    </div>
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Ablation on timesteps w/ Co-tracker (Paper Fig. 15)</h2>
+            </div>    
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                Note: due to the Cotracker's superior ability to track moving artifacts, generated videos numerically seem to follow input trajectory even though visual quality is impaired at timesteps 20, 10, and 1. 
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Input Trajectory</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Timestep [30, 45] (Our choice)</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <img src="data/videos/ablation/timestep/1002/img.png" width="100%" height="100%">
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/1002/30to45.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title">
+                <p>Timestep 50</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Timestep 40</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Timestep 30</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/1002/50.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/1002/40.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/1002/30.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" style="margin-bottom: 0px;">
+            <div class="col-4 compare-title">
+                <p>Timestep 20</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Timestep 10</p>
+            </div>
+            <div class="col-4 compare-title  compare-title-sm">
+                <p>Timestep 1</p>
+            </div>
+        </div>
+        <div class="row captioned_videos">
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/1002/20.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="1" loop playsinline autoPlay muted src="data/videos/ablation/timestep/1002/10.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="video-compare-container" style="width: 100%">
+                    <video class="video lazy" id="0" loop playsinline autoPlay muted src="data/videos/ablation/timestep/1002/1.webm" onplay="resizeAndPlay(this)"></video>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider" />
+    <div class="container" style="max-width: 768px;">
+        <footer>
+            <p> Website template from <a href="https://dreamfusion3d.github.io/">DreamFusion</a> and <a href="https://mv-dream.github.io/">MVDream</a> . We thank the authors for the open-source code.</p>
+        </footer>
+    </div>
+    <script src="data/assets/js/yall.js"></script>
+    <script>
+        yall(
+            {
+                observeChanges: true
+            }
+        );
+    </script>
+</body>
+
+</html>
